@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="RunningQR" Class="RunnerDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="AppSettings" ConnectionString="Data Source=runningqrcode.database.windows.net;Initial Catalog=RunningQR;Persist Security Info=True;User ID=jirasin" SettingsObjectName="RunningResult.Properties.Settings" SettingsPropertyName="RunningQRConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.RunnerInfo" Member="RunnerInfos">
+    <Type Name="RunnerInfo">
+      <Column Name="RunnerID" Type="System.Int64" DbType="BigInt NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="RunnerBIB" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="TicketType" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="FirstName" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
+      <Column Name="LastName" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
+      <Column Name="ShirtSize" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
+      <Column Name="Distance" Type="System.String" DbType="NVarChar(20)" CanBeNull="true" />
+      <Column Name="Age" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="Event" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.RunnerScanDateTime" Member="RunnerScanDateTimes">
+    <Type Name="RunnerScanDateTime">
+      <Column Name="RunnerScanDateTimeID" Type="System.Int64" DbType="BigInt NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="RunnerIdentification" Type="System.String" DbType="NVarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="ScannedDateTime" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+    </Type>
+  </Table>
+</Database>
