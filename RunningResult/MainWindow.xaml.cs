@@ -30,6 +30,165 @@ namespace RunningResult
             InitializeComponent();
         }
 
+        #region Start
+
+        #region Menus
+        private void StartMenu_Click(object sender, RoutedEventArgs e)
+        {
+            StartGrid.Visibility = Visibility.Visible;
+            SummaryGrid.Visibility = Visibility.Collapsed;
+        }
+
+        private void Summary_Click(object sender, RoutedEventArgs e)
+        {
+            SummaryGrid.Visibility = Visibility.Visible;
+            StartGrid.Visibility = Visibility.Collapsed;
+        }
+
+        private void Danger_Click(object sender, RoutedEventArgs e)
+        {
+            if (ClearDBRecords.Visibility == Visibility.Visible)
+            {
+                ClearDBRecords.Visibility = Visibility.Collapsed;
+                ClearSingleRun5K.Visibility = Visibility.Collapsed;
+                ClearSingleRun10K.Visibility = Visibility.Collapsed;
+                ClearSingleRun20K.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                ClearDBRecords.Visibility = Visibility.Visible;
+                ClearSingleRun5K.Visibility = Visibility.Visible;
+                ClearSingleRun10K.Visibility = Visibility.Visible;
+                ClearSingleRun20K.Visibility = Visibility.Visible;
+            }
+        }
+        #endregion
+
+        #region Functions
+        public void StartRunning(string eventName, string distance)
+        {
+            try
+            {
+                var now = DateTime.Now;
+                List<RunnerInfo> runners = new List<RunnerInfo>();
+                using (RunnerDataContext db = new RunnerDataContext())
+                {
+                    runners = db.RunnerInfos.Where(x => x.Event == eventName && x.Distance == distance).ToList();
+
+                    List<RunnerScanDateTime> insertingList = new List<RunnerScanDateTime>();
+                    foreach (var runner in runners)
+                    {
+                        RunnerScanDateTime record = new RunnerScanDateTime()
+                        {
+                            RunnerIdentification = runner.RunnerBIB,
+                            ScannedDateTime = now
+                        };
+                        insertingList.Add(record);
+                    }
+
+                    db.RunnerScanDateTimes.InsertAllOnSubmit(insertingList);
+                    db.SubmitChanges();
+                }
+                MessageBox.Show($"Start {eventName} {distance} successfully");
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+        }
+
+        public void ClearRunningRecord(string eventName, string distance)
+        {
+            MessageBoxResult messageBoxResult = MessageBox.Show($"Confirm clearing {eventName} {distance} runner record?", "Delete Confirmation", MessageBoxButton.YesNo);
+            if (messageBoxResult == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    using (RunnerDataContext db = new RunnerDataContext())
+                    {
+                        var runnerInfos = db.RunnerInfos.Where(x => x.Event == eventName && x.Distance == distance);
+                        var runnerScans = db.RunnerScanDateTimes.Where(x => runnerInfos.Select(y => y.RunnerBIB).Contains(x.RunnerIdentification));
+
+                        if (runnerScans.Any())
+                        {
+                            db.RunnerScanDateTimes.DeleteAllOnSubmit(runnerScans);
+                            db.SubmitChanges();
+
+                            MessageBox.Show($"Remove {eventName} {distance} successfully");
+                        }
+                        else
+                        {
+                            MessageBox.Show($"{eventName} {distance} found no record");
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                }
+            }
+        }
+        #endregion
+
+        #region Button Click
+        private void ClearDBRecords_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult messageBoxResult = MessageBox.Show("Confirm clearing WHOLE runner record?", "Delete Confirmation", MessageBoxButton.YesNo);
+            if (messageBoxResult == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    using (RunnerDataContext db = new RunnerDataContext())
+                    {
+                        if (db.RunnerScanDateTimes.Any())
+                        {
+                            db.RunnerScanDateTimes.DeleteAllOnSubmit(db.RunnerScanDateTimes);
+                            db.SubmitChanges();
+                        }
+                    }
+                    MessageBox.Show("Clear Whole record successfully");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
+
+        private void StartSingleRun5K_Click(object sender, RoutedEventArgs e)
+        {
+            StartRunning("Single Running", "5 K");
+        }
+
+        private void ClearSingleRun5K_Click(object sender, RoutedEventArgs e)
+        {
+            ClearRunningRecord("Single Running", "5 K");
+        }
+
+        private void StartSingleRun10K_Click(object sender, RoutedEventArgs e)
+        {
+            StartRunning("Single Running", "10 K");
+        }
+
+        private void ClearSingleRun10K_Click(object sender, RoutedEventArgs e)
+        {
+            ClearRunningRecord("Single Running", "10 K");
+        }
+
+        private void StartSingleRun20K_Click(object sender, RoutedEventArgs e)
+        {
+            StartRunning("Single Running", "20 K");
+        }
+
+        private void ClearSingleRun20K_Click(object sender, RoutedEventArgs e)
+        {
+            ClearRunningRecord("Single Running", "20 K");
+        }
+        #endregion
+
+        #endregion
+
+        #region Result
         public List<RunnerResult> SearchResult(string eventName, string distance)
         {
             _eventName = eventName;
@@ -46,34 +205,30 @@ namespace RunningResult
 
                 foreach (var group in runnerScans)
                 {
-                    RunnerResult runnerStatus = new RunnerResult();
-                    runnerStatus.RunnerIdentification = group.Key;
-                    var runnerInfo = runnerInfos.SingleOrDefault(x => x.RunnerBIB == group.Key);
-                    runnerStatus.Name = string.Concat(runnerInfo.FirstName, " ", runnerInfo.LastName);
-                    runnerStatus.Distance = runnerInfo.Distance;
-
                     var runnerMaxScannedTime = group.Max(x => x.ScannedDateTime);
                     var runnerMinScannedTime = group.Min(x => x.ScannedDateTime);
 
-                    runnerStatus.StartTimeString = $"ที่เวลา {runnerMinScannedTime.ToString(dateTimeFormat, thaiCulture)}";
+                    if (runnerMaxScannedTime > runnerMinScannedTime)
+                    {
+                        RunnerResult runnerStatus = new RunnerResult();
+                        runnerStatus.RunnerIdentification = group.Key;
+                        var runnerInfo = runnerInfos.SingleOrDefault(x => x.RunnerBIB == group.Key);
+                        runnerStatus.Name = string.Concat(runnerInfo.FirstName, " ", runnerInfo.LastName);
+                        runnerStatus.Distance = runnerInfo.Distance;
 
-                    if (runnerMaxScannedTime == runnerMinScannedTime)
-                    {
-                        runnerStatus.EndTimeString = "";
-                        runnerStatus.DurationString = "";
-                    }
-                    else
-                    {
+                        runnerStatus.StartTimeString = $"ที่เวลา {runnerMinScannedTime.ToString(dateTimeFormat, thaiCulture)}";
                         runnerStatus.EndTimeString = $"ที่เวลา {runnerMaxScannedTime.ToString(dateTimeFormat, thaiCulture)}";
+
                         var diffTime = (runnerMaxScannedTime - runnerMinScannedTime);
                         var dateTimeTimeDiff = new DateTime(Math.Abs(diffTime.Ticks));
                         runnerStatus.Duration = dateTimeTimeDiff;
                         runnerStatus.DurationString = $"{dateTimeTimeDiff.Hour} ชั่วโมง {dateTimeTimeDiff.Minute} นาที {dateTimeTimeDiff.Second}.{dateTimeTimeDiff.Millisecond} วินาที";
+
+                        result.Add(runnerStatus);
                     }
-                    result.Add(runnerStatus);
                 }
             }
-            return result.OrderByDescending(x => x.Duration).ToList();
+            return result.OrderBy(x => x.Duration).ToList();
         }
 
         private void ThreeKiloButton_Click(object sender, RoutedEventArgs e)
@@ -214,6 +369,7 @@ namespace RunningResult
                 sw.Close();
             }
         }
+        #endregion
     }
 
     public class RunnerResult
@@ -221,9 +377,7 @@ namespace RunningResult
         public string RunnerIdentification { get; set; }
         public string Name { get; set; }
         public string Distance { get; set; }
-        //public DateTime StartTime { get; set; }
         public string StartTimeString { get; set; }
-        //public DateTime EndTime { get; set; }
         public string EndTimeString { get; set; }
         public DateTime Duration { get; set; }
         public string DurationString { get; set; }

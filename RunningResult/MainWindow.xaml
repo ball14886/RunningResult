@@ -13,68 +13,123 @@
     </Window.Resources>
 
     <Grid>
+        <DockPanel>
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="Menu">
+                    <MenuItem Header="Start" Name="StartMenu" Click="StartMenu_Click"/>
+                    <MenuItem Header="Summary" Name="Summary" Click="Summary_Click"/>
+                    <Separator/>
+                    <MenuItem Header="Danger" Name="Danger" Click="Danger_Click"/>
+                </MenuItem>
+            </Menu>
+            <TextBox AcceptsReturn="True" />
+        </DockPanel>
         <extToolkit1:BusyIndicator x:Name="busyIndicator" >
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="50"/>
-                    <RowDefinition Height="80"/>
-                    <RowDefinition Height="8*"/>
+                    <RowDefinition/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
-                <Grid Grid.Row="0" Margin="0,20,0,5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <RadioButton Grid.Column="0" Name="SingleRunningRadio" Content="Single Running" GroupName="Event" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" IsChecked="True"/>
-                    <RadioButton Grid.Column="1" Name="OzoneRadio" Content="Ozone" GroupName="Event" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
-                </Grid>
-                <Grid Grid.Row="1" Margin="0,10,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <Button Name="ThreeKiloButton" Grid.Column="0" Content="3km." FontSize="20" Visibility="{Binding IsChecked, ElementName=OzoneRadio, Converter={StaticResource b2v}}" Click="ThreeKiloButton_Click"/>
-                    <Button Name="FiveKiloButton" Grid.Column="1" Content="5km." FontSize="20" Visibility="{Binding IsChecked, ElementName=SingleRunningRadio, Converter={StaticResource b2v}}" Click="FiveKiloButton_Click"/>
-                    <Button Name="TenKiloButton" Grid.Column="2" Content="10km." FontSize="20" Click="TenKiloButton_Click"/>
-                    <Button Name="TwentyKiloButton" Grid.Column="3" Content="20km." FontSize="20" Visibility="{Binding IsChecked, ElementName=SingleRunningRadio, Converter={StaticResource b2v}}" Click="TwentyKiloButton_Click"/>
-                </Grid>
-                <Grid Grid.Row="2" HorizontalAlignment="Left">
+                <Grid Name="SummaryGrid" Visibility="Visible">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="35"/>
-                        <RowDefinition Height="35"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="80"/>
+                        <RowDefinition Height="8*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" Margin="0,20,0,5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <RadioButton Grid.Column="0" Name="SingleRunningRadio" Content="Single Running" GroupName="Event" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center" IsChecked="True"/>
+                        <RadioButton Grid.Column="1" Name="OzoneRadio" Content="Ozone" GroupName="Event" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+                    </Grid>
+                    <Grid Grid.Row="1" Margin="0,10,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Button Name="ThreeKiloButton" Grid.Column="0" Content="3km." FontSize="20" Visibility="{Binding IsChecked, ElementName=OzoneRadio, Converter={StaticResource b2v}}" Click="ThreeKiloButton_Click"/>
+                        <Button Name="FiveKiloButton" Grid.Column="1" Content="5km." FontSize="20" Visibility="{Binding IsChecked, ElementName=SingleRunningRadio, Converter={StaticResource b2v}}" Click="FiveKiloButton_Click"/>
+                        <Button Name="TenKiloButton" Grid.Column="2" Content="10km." FontSize="20" Click="TenKiloButton_Click"/>
+                        <Button Name="TwentyKiloButton" Grid.Column="3" Content="20km." FontSize="20" Visibility="{Binding IsChecked, ElementName=SingleRunningRadio, Converter={StaticResource b2v}}" Click="TwentyKiloButton_Click"/>
+                    </Grid>
+                    <Grid Grid.Row="2" HorizontalAlignment="Left">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="35"/>
+                            <RowDefinition Height="35"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="Event : " FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0"/>
+                        <TextBlock Name="EventTextBox" Grid.Row="0" Grid.Column="2" FontSize="20" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="Distance : " FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0"/>
+                        <TextBlock Name="DistanceTextBox" Grid.Row="1" Grid.Column="2" FontSize="20" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                        <Button Name="ExportExcel" Content="Export to Excel" Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Click="ExportExcelButton_Click" Width="300" FontSize="20" Margin="0,10,20,0"/>
+                    </Grid>
+                    <ListView Grid.Row="3" Name="GridView">
+                        <ListView.View>
+                            <GridView AllowsColumnReorder="true">
+                                <GridView.ColumnHeaderContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Ascending"/>
+                                        <MenuItem Header="Descending"/>
+                                    </ContextMenu>
+                                </GridView.ColumnHeaderContextMenu>
+                                <GridViewColumn Header="BIB" Width="100" DisplayMemberBinding="{Binding Path=RunnerIdentification}"/>
+                                <GridViewColumn Header="Name" Width="250" DisplayMemberBinding="{Binding Path=Name}"/>
+                                <GridViewColumn Header="Distance" Width="50" DisplayMemberBinding="{Binding Path=Distance}"/>
+                                <GridViewColumn Header="Start Time" Width="100" DisplayMemberBinding="{Binding Path=StartTimeString}"/>
+                                <GridViewColumn Header="End Time" Width="100" DisplayMemberBinding="{Binding Path=EndTimeString}"/>
+                                <GridViewColumn Header="Duration" Width="180" DisplayMemberBinding="{Binding Path=DurationString}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+                <Grid Name="StartGrid" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="120"/>
+                        <RowDefinition Height="40"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Event : " FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0"/>
-                    <TextBlock Name="EventTextBox" Grid.Row="0" Grid.Column="2" FontSize="20" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                    <TextBlock Grid.Row="1" Grid.Column="1" Text="Distance : " FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0"/>
-                    <TextBlock Name="DistanceTextBox" Grid.Row="1" Grid.Column="2" FontSize="20" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                    <Button Name="ExportExcel" Content="Export to Excel" Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Click="ExportExcelButton_Click" Width="300" FontSize="20" Margin="0,10,20,0"/>
+                    <Button Name="ClearDBRecords" Margin="0,40,0,40" Grid.Row="0" Grid.ColumnSpan="5" Content="Clear WHOLE runner scan record" Click="ClearDBRecords_Click" Background="Pink" Visibility="Collapsed"/>
+                    <Grid Name="SingleRun5K" Grid.Row="1" Grid.Column="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Button Name="StartSingleRun5K" Grid.Column="0" Content="Start SingleRun 5 K" Background="LightGreen" Click="StartSingleRun5K_Click"/>
+                        <Button Name="ClearSingleRun5K" Grid.Column="1" Content="Clear SingleRun 5 K" Background="Pink" Click="ClearSingleRun5K_Click" Visibility="Collapsed"/>
+                    </Grid>
+                    <Grid Name="SingleRun10K" Grid.Row="1" Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Button Name="StartSingleRun10K" Grid.Column="0" Content="Start SingleRun 10 K" Background="LightGreen" Click="StartSingleRun10K_Click"/>
+                        <Button Name="ClearSingleRun10K" Grid.Column="1" Content="Clear SingleRun 10 K" Background="Pink" Click="ClearSingleRun10K_Click" Visibility="Collapsed"/>
+                    </Grid>
+                    <Grid Name="SingleRun20K" Grid.Row="1" Grid.Column="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Button Name="StartSingleRun20K" Grid.Column="0" Content="Start SingleRun 20 K" Background="LightGreen" Click="StartSingleRun20K_Click"/>
+                        <Button Name="ClearSingleRun20K" Grid.Column="1" Content="Clear SingleRun 20 K" Background="Pink" Click="ClearSingleRun20K_Click" Visibility="Collapsed"/>
+                    </Grid>
                 </Grid>
-                <ListView Grid.Row="3" Name="GridView">
-                    <ListView.View>
-                        <GridView AllowsColumnReorder="true">
-                            <GridView.ColumnHeaderContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Header="Ascending"/>
-                                    <MenuItem Header="Descending"/>
-                                </ContextMenu>
-                            </GridView.ColumnHeaderContextMenu>
-                            <GridViewColumn Header="BIB" Width="100" DisplayMemberBinding="{Binding Path=RunnerIdentification}"/>
-                            <GridViewColumn Header="Name" Width="250" DisplayMemberBinding="{Binding Path=Name}"/>
-                            <GridViewColumn Header="Distance" Width="50" DisplayMemberBinding="{Binding Path=Distance}"/>
-                            <GridViewColumn Header="Start Time" Width="100" DisplayMemberBinding="{Binding Path=StartTimeString}"/>
-                            <GridViewColumn Header="End Time" Width="100" DisplayMemberBinding="{Binding Path=EndTimeString}"/>
-                            <GridViewColumn Header="Duration" Width="180" DisplayMemberBinding="{Binding Path=DurationString}"/>
-                        </GridView>
-                    </ListView.View>
-                </ListView>
             </Grid>
         </extToolkit1:BusyIndicator>
     </Grid>
