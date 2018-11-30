@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,6 +21,10 @@ namespace RunningResult
 {
     public partial class MainWindow : Window
     {
+        List<RunnerResult> _List = new List<RunnerResult>();
+        string _eventName = "";
+        string _distance = "";
+
         public MainWindow()
         {
             InitializeComponent();
@@ -26,6 +32,9 @@ namespace RunningResult
 
         public List<RunnerResult> SearchResult(string eventName, string distance)
         {
+            _eventName = eventName;
+            _distance = distance;
+
             string dateTimeFormat = "HH : mm : ss.fff";
             CultureInfo thaiCulture = new CultureInfo("th-TH");
 
@@ -46,7 +55,7 @@ namespace RunningResult
                     var runnerMaxScannedTime = group.Max(x => x.ScannedDateTime);
                     var runnerMinScannedTime = group.Min(x => x.ScannedDateTime);
 
-                    runnerStatus.StartTimeString = runnerMinScannedTime.ToString(dateTimeFormat, thaiCulture);
+                    runnerStatus.StartTimeString = $"ที่เวลา {runnerMinScannedTime.ToString(dateTimeFormat, thaiCulture)}";
 
                     if (runnerMaxScannedTime == runnerMinScannedTime)
                     {
@@ -55,7 +64,7 @@ namespace RunningResult
                     }
                     else
                     {
-                        runnerStatus.EndTimeString = runnerMaxScannedTime.ToString(dateTimeFormat, thaiCulture);
+                        runnerStatus.EndTimeString = $"ที่เวลา {runnerMaxScannedTime.ToString(dateTimeFormat, thaiCulture)}";
                         var diffTime = (runnerMaxScannedTime - runnerMinScannedTime);
                         var dateTimeTimeDiff = new DateTime(Math.Abs(diffTime.Ticks));
                         runnerStatus.Duration = dateTimeTimeDiff;
@@ -87,7 +96,8 @@ namespace RunningResult
 
         private void ThreeKiloButton_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            GridView.ItemsSource = e.Result as List<RunnerResult>;
+            _List = e.Result as List<RunnerResult>;
+            GridView.ItemsSource = _List;
             busyIndicator.IsBusy = false;
         }
 
@@ -111,7 +121,8 @@ namespace RunningResult
 
         private void FiveKiloButton_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            GridView.ItemsSource = e.Result as List<RunnerResult>;
+            _List = e.Result as List<RunnerResult>;
+            GridView.ItemsSource = _List;
             busyIndicator.IsBusy = false;
         }
 
@@ -138,7 +149,8 @@ namespace RunningResult
 
         private void TenKiloButton_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            GridView.ItemsSource = e.Result as List<RunnerResult>;
+            _List = e.Result as List<RunnerResult>;
+            GridView.ItemsSource = _List;
             busyIndicator.IsBusy = false;
         }
 
@@ -162,8 +174,45 @@ namespace RunningResult
 
         private void TwentyKiloButton_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            GridView.ItemsSource = e.Result as List<RunnerResult>;
+            _List = e.Result as List<RunnerResult>;
+            GridView.ItemsSource = _List;
             busyIndicator.IsBusy = false;
+        }
+
+        private void ExportExcelButton_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+            saveFileDialog1.Filter = "csv files (*.csv)|*.csv";
+            saveFileDialog1.FileName = "logs";
+            saveFileDialog1.Title = "Export to Excel";
+            StringBuilder sb = new StringBuilder();
+
+            int objectCount = _List.Count;
+            for (int i = 0; i < objectCount; i++)
+            {
+                var row = _List[i];
+                sb.Append(row.RunnerIdentification.ToString() + ",");
+                sb.Append(row.Name.ToString() + ",");
+                sb.Append(row.Distance.ToString() + ",");
+                sb.Append(row.StartTimeString.ToString() + ",");
+                sb.Append(row.EndTimeString.ToString() + ",");
+                sb.Append(row.DurationString.ToString());
+
+                sb.AppendLine();
+            }
+
+            try
+            {
+                StreamWriter sw = new StreamWriter($"D:/{_eventName}_{_distance}_{DateTime.Now.ToString("hh.MM.ss")}.csv", true, Encoding.UTF8);
+                sw.Write(sb.ToString());
+                sw.Close();
+            }
+            catch
+            {
+                StreamWriter sw = new StreamWriter($"E:/{_eventName}_{_distance}_{DateTime.Now.ToString("hh.MM.ss")}.csv", true, Encoding.UTF8);
+                sw.Write(sb.ToString());
+                sw.Close();
+            }
         }
     }
 

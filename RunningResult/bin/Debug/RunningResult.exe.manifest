@@ -42,14 +42,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="RunningResult.exe" size="27048">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="RunningResult.exe" size="28584">
       <assemblyIdentity name="RunningResult" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>27Ig8i6hTlMGmUsIEbEXFpmGQVWYaD6xDZkS17Ri9dk=</dsig:DigestValue>
+        <dsig:DigestValue>MVruz0N2XbqWE29F2PNi3b4gNcJ24rr2/FLtVJBpwUc=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
