@@ -30,3 +30,8 @@ E:\Projects\MillionCreation\RunningResult\RunningResult\RunningResult\bin\Debug\
 E:\Projects\MillionCreation\RunningResult\RunningResult\RunningResult\bin\Debug\sv\Xceed.Wpf.AvalonDock.resources.dll
 E:\Projects\MillionCreation\RunningResult\RunningResult\RunningResult\bin\Debug\zh-Hans\Xceed.Wpf.AvalonDock.resources.dll
 E:\Projects\MillionCreation\RunningResult\RunningResult\RunningResult\obj\Debug\RunningResult.csproj.CopyComplete
+E:\Projects\MillionCreation\RunningResult\RunningResult\RunningResult\bin\Debug\RunningResult.exe.manifest
+E:\Projects\MillionCreation\RunningResult\RunningResult\RunningResult\bin\Debug\RunningResult.application
+E:\Projects\MillionCreation\RunningResult\RunningResult\RunningResult\obj\Debug\RunningResult.TrustInfo.xml
+E:\Projects\MillionCreation\RunningResult\RunningResult\RunningResult\obj\Debug\RunningResult.exe.manifest
+E:\Projects\MillionCreation\RunningResult\RunningResult\RunningResult\obj\Debug\RunningResult.application
